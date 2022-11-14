@@ -16,14 +16,16 @@ module.exports = (sequelize, DataTypes) => {
     Kyc.init({
         fullname: DataTypes.STRING,
         phonenumber: DataTypes.INTEGER,
-        card_id: DataTypes.INTEGER,
+        card_id: DataTypes.STRING,
         birthday: DataTypes.DATE,
+        ssn_id: DataTypes.STRING,
+        ein_id: DataTypes.STRING,
         card_front: DataTypes.STRING,
         card_back: DataTypes.STRING,
         country: DataTypes.STRING,
         image_ssn: DataTypes.STRING,
         image_drive: DataTypes.STRING,
-        eil_code: DataTypes.STRING,
+        ein_image: DataTypes.STRING,
         image_passport: DataTypes.STRING,
         status: DataTypes.INTEGER
     }, {

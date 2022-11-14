@@ -1,19 +1,48 @@
 import db from '../models'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+require('dotenv').config()
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 const hashPassword = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8))
 
 export const register = ({ email, password }) => new Promise(async (resolve, reject) => {
+    let result = '';
+    let characters = process.env.WALLET_CODE;
+    let charactersLength = characters.length;
+    for (let i = 0; i < 34; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    // try {
+    const wallet = await db.Wallet.create({
+        wallet_code: result
+
+    })
+    // } catch (error) {
+    //     reject(error)
+    // }
+    // try {
+    const kyc = await db.Kyc.create({
+        status: 0
+
+    })
+    // } catch (error) {
+    //     reject(error)
+    // }
     try {
         const response = await db.User.findOrCreate({ // email exist tra ve false
             where: { email },
             defaults: {
                 email,
-                password: hashPassword(password)
+                password: hashPassword(password),
+                codeRefer: uuidv4(),
+                kyc_id: kyc.id,
+                wallet_id: wallet.id
             }
         })
+
 
         const accessToken = response[1] // khong thi tra ve true
             ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
@@ -41,6 +70,7 @@ export const register = ({ email, password }) => new Promise(async (resolve, rej
     }
 })
 export const login = ({ email, password }) => new Promise(async (resolve, reject) => {
+
     try {
         const response = await db.User.findOne({
             where: { email },
@@ -58,7 +88,8 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             err: accessToken ? 0 : 1,
             mes: accessToken ? 'Login is successfully' : response ? 'Password is wrong' : 'Email has been registered',
             'access_token': accessToken ? `Bearer ${accessToken}` : accessToken,
-            'refresh_token': refreshToken
+            'refresh_token': refreshToken,
+
         })
         if (refreshToken) {
             await db.User.update({
