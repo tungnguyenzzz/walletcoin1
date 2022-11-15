@@ -23,6 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         card_front: DataTypes.STRING,
         card_back: DataTypes.STRING,
         country: DataTypes.STRING,
+        image_face: DataTypes.STRING,
         image_ssn: DataTypes.STRING,
         image_drive: DataTypes.STRING,
         ein_image: DataTypes.STRING,
