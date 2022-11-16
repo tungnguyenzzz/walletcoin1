@@ -1,3 +1,4 @@
+import { parse } from 'dotenv';
 import db from '../models'
 
 export const posttransfer = (transfer_wallet_code, take_wallet_code, total_coin, total_coin_referral) => new Promise(async (resolve, reject) => {
@@ -152,6 +153,70 @@ export const posttransfer = (transfer_wallet_code, take_wallet_code, total_coin,
             err: response,
             mes: 'not success',
             data: []
+        })
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const gethistorytranfer = () => new Promise(async (resolve, reject) => {
+    try {
+        const response = await db.History_transfer.findAll({ 
+            limit: 100, 
+            order: [
+                ['id', 'DESC'] 
+            ]
+        });
+
+        resolve({
+            success: true,
+            err: 'success',
+            mes: 'success',
+            data: response
+        })
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const gettopwallet = () => new Promise(async (resolve, reject) => {
+    try {
+        const response = await db.Wallet.findAll({ 
+            limit: 100, 
+            order: [
+                ['total_coin', 'DESC'] 
+            ]
+        });
+
+        resolve({
+            success: true,
+            err: 'success',
+            mes: 'success',
+            data: response
+        })
+    } catch (error) {
+        reject(error)
+    }
+})
+
+export const getwallet = (transfer_wallet_code) => new Promise(async (resolve, reject) => {
+    try {
+        
+        const response = await db.History_transfer.findAll({ 
+            limit: 100,             
+            where: {
+                transfer_wallet_code: transfer_wallet_code,
+            },
+            order: [
+                ['id', 'DESC'] 
+            ]
+        });
+
+        resolve({
+            success: true,
+            err: 'success',
+            mes: 'success',
+            data: response
         })
     } catch (error) {
         reject(error)
