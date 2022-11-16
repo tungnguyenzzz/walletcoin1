@@ -10,9 +10,9 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       wallet_code: { type: Sequelize.STRING, allowNull: true },
-      total_price: { type: Sequelize.DOUBLE, allowNull: true },
-      total_coin: { type: Sequelize.DOUBLE, allowNull: true },
-      total_coin_referral: { type: Sequelize.DOUBLE, allowNull: true },
+      total_price: { type: Sequelize.DOUBLE, defaultValue: 0.0000000 },
+      total_coin: { type: Sequelize.DOUBLE, defaultValue: 0.0000000 },
+      total_coin_referral: { type: Sequelize.DOUBLE, defaultValue: 0.0000000 },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
     });

@@ -5,11 +5,11 @@ import verifyToken from '../middlewares/verify_token'
 const router = express.Router()
 
 // PUBLIC ROUTES
-
-
+// router.use(verifyToken)
+router.get('/:id', controllers.getCurrent)
 // PRIVATE ROUTES
-router.use(verifyToken)
-router.get('/', controllers.getCurrent)
+
+
 
 
 module.exports = router
