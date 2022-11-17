@@ -10,14 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
 
-      // transfer_wallet_code: DataTypes.STRING,
-      //   take_wallet_code: DataTypes.STRING,
-      //   total_coin: DataTypes.DOUBLE,
-      //   total_coin_referral: DataTypes.DOUBLE
       transfer_wallet_code: { type: Sequelize.STRING, allowNull: true },
       take_wallet_code: { type: Sequelize.STRING, allowNull: true },
-      total_coin: { type: Sequelize.DOUBLE, allowNull: true },
-      total_coin_referral: { type: Sequelize.DOUBLE, allowNull: true },
+      total_coin_NTC: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      total_coin_NCO: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      total_coin_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
     });

@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable('Users', {
       id: {
         allowNull: false,
-        autoIncrement: true,
+
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       // email: DataTypes.STRING,
       // password: DataTypes.STRING,
@@ -20,8 +20,8 @@ module.exports = {
       password: { type: Sequelize.STRING },
       kyc_id: { type: Sequelize.INTEGER },
       codeRefer: { type: Sequelize.STRING },
-      wallet_id: { type: Sequelize.INTEGER },
-      role: { type: Sequelize.INTEGER },
+      wallet_id: { type: Sequelize.STRING },
+      role: { type: Sequelize.INTEGER, defaultValue: 0 },
       refresh_token: { type: Sequelize.STRING },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },

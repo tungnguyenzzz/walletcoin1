@@ -16,8 +16,9 @@ module.exports = (sequelize, DataTypes) => {
     History_transfer.init({
         transfer_wallet_code: DataTypes.STRING,
         take_wallet_code: DataTypes.STRING,
-        total_coin: DataTypes.DOUBLE,
-        total_coin_referral: DataTypes.DOUBLE
+        total_coin_NTC: DataTypes.DOUBLE,
+        total_coin_NCO: DataTypes.DOUBLE,
+        total_coin_NUSD: DataTypes.DOUBLE
     }, {
         sequelize,
         modelName: 'History_transfer',

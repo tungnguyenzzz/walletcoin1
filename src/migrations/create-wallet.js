@@ -5,14 +5,19 @@ module.exports = {
     await queryInterface.createTable('Wallets', {
       id: {
         allowNull: false,
-        autoIncrement: true,
+        autoIncrement: false,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
-      wallet_code: { type: Sequelize.STRING, allowNull: true },
-      total_price: { type: Sequelize.DOUBLE, allowNull: true,defaultValue: 0 },
-      total_coin: { type: Sequelize.DOUBLE, allowNull: true,defaultValue: 0 },
-      total_coin_referral: { type: Sequelize.DOUBLE, allowNull: true,defaultValue: 0 },
+      coin_code_NTC: { type: Sequelize.STRING, allowNull: true },
+      coin_code_NCO: { type: Sequelize.STRING, allowNull: true },
+      coin_code_NUSD: { type: Sequelize.STRING, allowNull: true },
+      coin_price_NTC: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      coin_price_NCO: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      coin_price_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      total_coin_NTC: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      total_coin_NCO: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
+      total_coin_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0 },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
     });

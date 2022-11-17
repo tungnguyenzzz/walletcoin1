@@ -2,11 +2,21 @@ import db from '../models'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 require('dotenv').config()
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4, v4 } from 'uuid';
 
 
 
 const hashPassword = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8))
+const randomCoinCode = () => {
+    let result = '';
+    let characters = process.env.WALLET_CODE;
+    let charactersLength = characters.length;
+    for (let i = 0; i < 34; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result
+}
+
 
 export const register = ({ email, password, codeReferInput }) => new Promise(async (resolve, reject) => {
     if (!email || !password) {
@@ -18,20 +28,22 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
         })
     }
 
-    if (!codeReferInput) {
-        let result = '';
-        let characters = process.env.WALLET_CODE;
-        let charactersLength = characters.length;
-        for (let i = 0; i < 34; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
+    if (!codeReferInput || codeReferInput === '') {
 
+        const coin_code_NTC = randomCoinCode()
+        const coin_code_NCO = randomCoinCode()
+        const coin_code_NUSD = randomCoinCode()
         const wallet = await db.Wallet.create({
-            wallet_code: result
+            id: v4(),
+            coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
+            coin_code_NCO: coin_code_NCO,
+            coin_code_NUSD: coin_code_NUSD
 
         })
 
-        const kyc = await db.Kyc.create({
+
+
+        const kyc = await db.Kyc.create({//them kyc id
             status: 0
 
         })
@@ -40,6 +52,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
             const response = await db.User.findOrCreate({ // email exist tra ve false
                 where: { email },
                 defaults: {
+                    id: v4(),
                     email,
                     password: hashPassword(password),
                     codeRefer: uuidv4(),
@@ -47,6 +60,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     wallet_id: wallet.id
                 }
             })
+
 
 
             const accessToken = response[1] // khong thi tra ve true
@@ -87,7 +101,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
             data: []
         })
         else {
-            const findTotalCoinReferal = await db.Wallet.findOne({
+            const findTotalCoinReferal = await db.Wallet.findOne({ //tim vi cua thang gioi thieu
                 where: {
                     id: findWallet.wallet_id
                 }
@@ -95,25 +109,24 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
 
 
             await db.Wallet.update({
-                total_coin_referral: findTotalCoinReferal.total_coin_referral + 5.0
+                total_coin_NCO: findTotalCoinReferal.total_coin_NCO + 3.0 // cong them 3$
             },
                 {
                     where: { id: findWallet.wallet_id }
                 }
             )
-
-            let result = '';
-            let characters = process.env.WALLET_CODE;
-            let charactersLength = characters.length;
-            for (let i = 0; i < 34; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            // try {
+            const coin_code_NTC = randomCoinCode()
+            const coin_code_NCO = randomCoinCode()
+            const coin_code_NUSD = randomCoinCode()
             const wallet = await db.Wallet.create({
-                wallet_code: result,
-                total_coin_referral: 1
-            })
+                id: v4(),
+                coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
+                coin_code_NCO: coin_code_NCO,
+                coin_code_NUSD: coin_code_NUSD,
+                total_coin_NCO: 1
 
+            })
+            // try {
             // } catch (error) {
             //     reject(error)
             // }
@@ -129,6 +142,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 const response = await db.User.findOrCreate({ // email exist tra ve false
                     where: { email },
                     defaults: {
+                        id: v4(),
                         email,
                         password: hashPassword(password),
                         codeRefer: uuidv4(),
@@ -156,8 +170,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 resolve({
                     err: response[1] ? 0 : 1,
                     mes: response[1] ? 'Register is successfully' : 'Email is used',
-                    'access_token': accessToken ? `Bearer ${accessToken}` : accessToken,
-                    'refresh_token': refreshToken
+                    access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
+                    refresh_token: refreshToken
                 })
 
             } catch (error) {
@@ -165,9 +179,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
             }
         }
 
-        // const findWallet = await db.User.findOne(
-        //     { where: { codeRefer: codeReferInput } }
-        // )
+
 
     }
 

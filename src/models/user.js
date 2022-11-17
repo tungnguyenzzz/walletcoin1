@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         password: DataTypes.STRING,
         kyc_id: DataTypes.INTEGER,
         codeRefer: DataTypes.STRING,
-        wallet_id: DataTypes.INTEGER,
+        wallet_id: DataTypes.STRING,
         role: DataTypes.INTEGER,
         refresh_token: DataTypes.STRING
     }, {

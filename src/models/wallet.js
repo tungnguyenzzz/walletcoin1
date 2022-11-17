@@ -14,10 +14,15 @@ module.exports = (sequelize, DataTypes) => {
         }
     }
     Wallet.init({
-        wallet_code: DataTypes.STRING,
-        total_price: DataTypes.DOUBLE,
-        total_coin: DataTypes.DOUBLE,
-        total_coin_referral: DataTypes.DOUBLE
+        coin_code_NTC: DataTypes.STRING,
+        coin_code_NCO: DataTypes.STRING,
+        coin_code_NUSD: DataTypes.STRING,
+        coin_price_NTC: DataTypes.DOUBLE,
+        coin_price_NCO: DataTypes.DOUBLE,
+        coin_price_NUSD: DataTypes.DOUBLE,
+        total_coin_NTC: DataTypes.DOUBLE,
+        total_coin_NCO: DataTypes.DOUBLE,
+        total_coin_NUSD: DataTypes.DOUBLE
     }, {
         sequelize,
         modelName: 'Wallet',
