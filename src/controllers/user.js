@@ -5,8 +5,18 @@ import * as services from "../services"
 
 export const getCurrent = async (req, res, next) => {
     try {
-        const { id } = req.params
-        const response = await services.getOne(id)
+        const { email } = req.body
+        const response = await services.getOne(email)
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return res.status(400).json(error)
+    }
+}
+
+export const sendEmail = async (req, res, next) => {
+    try {
+        const response = await services.sendMail()
         return res.status(200).json(response)
 
     } catch (error) {

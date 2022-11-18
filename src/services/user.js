@@ -1,5 +1,5 @@
 import db from '../models'
-
+const nodemailer = require("nodemailer");
 
 // export const getOne = (userId) => new Promise(async (resolve, reject) => {
 //     try {
@@ -21,42 +21,58 @@ import db from '../models'
 //         reject(error)
 //     }
 // })
-export const getOne = (userId) => new Promise(async (resolve, reject) => {
+export const getOne = (email) => new Promise(async (resolve, reject) => {
 
     try {
         const user = await db.User.findOne(
             {
-                where: { id: userId },
+                where: { email: email },
                 attributes: {
-                    exclude: ['password', 'role', 'refresh_token', 'kyc_id', 'wallet_id']
+                    exclude: ['password', 'role', 'refresh_token'] //, 'kyc_id', 'wallet_id'
                 }
             }
         )
-        const wallet = await db.Wallet.findOne({
-            where: { id: 12 }
-        })
-
-        if (user && wallet)
-            resolve({
-                success: true,
-                mes: 'got',
-                data: {
-                    user,
-                    wallet_code: wallet.wallet_code
-                }
-
+        if (user) {
+            const wallet = await db.Wallet.findOne({
+                where: { id: user.wallet_id }
             })
-        else {
+            const kycStatus = await db.Kyc.findOne({
+                where: { id: user.kyc_id }
+            })
+            console.log(wallet.coin_code_NTC, kycStatus.status)
+
+            if (user && wallet)
+                resolve({
+                    success: true,
+                    mes: 'got',
+                    data: {
+                        user,
+                        wallet,
+                        kycStatus: kycStatus.status
+                    }
+
+                })
+            else {
+                resolve({
+                    success: false,
+                    mes: 'khong tim thay thong tin',
+                    data: []
+                })
+            }
+        } else {
             resolve({
                 success: false,
-                mes: 'khong tim thay thong tin',
+                mes: 'khong tim thay email',
                 data: []
             })
         }
+
     } catch (error) {
         reject(error)
     }
 })
+
+
 
 // const findWallet = await db.User.findOne(
 //     { where: { codeRefer: codeReferInput } }

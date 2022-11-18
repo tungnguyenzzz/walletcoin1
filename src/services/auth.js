@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 require('dotenv').config()
 import { v4 as uuidv4, v4 } from 'uuid';
-
+const sendEmail = require("../config/sendEmail");
 
 
 const hashPassword = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8))
@@ -61,7 +61,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 }
             })
 
-
+            console.log(response[0].email)
 
             const accessToken = response[1] // khong thi tra ve true
                 ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
@@ -78,11 +78,16 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     where: { id: response[0].id }
                 })
             }
+            if (accessToken) {  // gui email
+                const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
+                await sendEmail(response[0].email, "Verify Email", url);
+            }
             resolve({
                 err: response[1] ? 0 : 1,
                 mes: response[1] ? 'Register is successfully' : 'Email is used',
-                'access_token': accessToken ? `Bearer ${accessToken}` : accessToken,
-                'refresh_token': refreshToken
+                access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
+                refresh_token: refreshToken,
+                statusMail: "An Email sent to your account please verify"
             })
 
         } catch (error) {
@@ -126,18 +131,12 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 total_coin_NCO: 1
 
             })
-            // try {
-            // } catch (error) {
-            //     reject(error)
-            // }
-            // try {
+
             const kyc = await db.Kyc.create({
                 status: 0
 
             })
-            // } catch (error) {
-            //     reject(error)
-            // }
+
             try {
                 const response = await db.User.findOrCreate({ // email exist tra ve false
                     where: { email },
@@ -167,11 +166,16 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                         where: { id: response[0].id }
                     })
                 }
+                if (accessToken) {  // gui email
+                    const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
+                    await sendEmail(response[0].email, "Verify Email", url);
+                }
                 resolve({
                     err: response[1] ? 0 : 1,
                     mes: response[1] ? 'Register is successfully' : 'Email is used',
                     access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
-                    refresh_token: refreshToken
+                    refresh_token: refreshToken,
+                    statusMail: "An Email sent to your account please verify"
                 })
 
             } catch (error) {
