@@ -21,12 +21,12 @@ const nodemailer = require("nodemailer");
 //         reject(error)
 //     }
 // })
-export const getOne = (email) => new Promise(async (resolve, reject) => {
+export const getOne = (id) => new Promise(async (resolve, reject) => {
 
     try {
         const user = await db.User.findOne(
             {
-                where: { email: email },
+                where: { id: id },
                 attributes: {
                     exclude: ['password', 'role', 'refresh_token'] //, 'kyc_id', 'wallet_id'
                 }

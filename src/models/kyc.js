@@ -28,6 +28,13 @@ module.exports = (sequelize, DataTypes) => {
         image_drive: DataTypes.STRING,
         ein_image: DataTypes.STRING,
         image_passport: DataTypes.STRING,
+        codeFront: DataTypes.STRING,
+        codeBack: DataTypes.STRING,
+        codeFace: DataTypes.STRING,
+        codeSSN: DataTypes.STRING,
+        codeLicense: DataTypes.STRING,
+        codeEIN: DataTypes.STRING,
+        codePassport: DataTypes.STRING,
         status: DataTypes.INTEGER
     }, {
         sequelize,

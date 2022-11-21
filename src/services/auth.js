@@ -17,7 +17,6 @@ const randomCoinCode = () => {
     return result
 }
 
-
 export const register = ({ email, password, codeReferInput }) => new Promise(async (resolve, reject) => {
     if (!email || !password) {
         resolve({
@@ -41,11 +40,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
 
         })
 
-
-
         const kyc = await db.Kyc.create({//them kyc id
             status: 0
-
         })
 
         try {
@@ -60,8 +56,6 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     wallet_id: wallet.id
                 }
             })
-
-            console.log(response[0].email)
 
             const accessToken = response[1] // khong thi tra ve true
                 ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
@@ -78,10 +72,10 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     where: { id: response[0].id }
                 })
             }
-            if (accessToken) {  // gui email
-                const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
-                await sendEmail(response[0].email, "Verify Email", url);
-            }
+            // if (accessToken) {  // gui email
+            //     const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
+            //     await sendEmail(response[0].email, "Verify Email", url);
+            // }
             resolve({
                 err: response[1] ? 0 : 1,
                 mes: response[1] ? 'Register is successfully' : 'Email is used',
@@ -111,7 +105,6 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     id: findWallet.wallet_id
                 }
             })
-
 
             await db.Wallet.update({
                 total_coin_NCO: findTotalCoinReferal.total_coin_NCO + 3.0 // cong them 3$
@@ -149,7 +142,6 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                         wallet_id: wallet.id
                     }
                 })
-
 
                 const accessToken = response[1] // khong thi tra ve true
                     ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
@@ -218,7 +210,8 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
                 mes: 'Login is successfully',
                 data: {
                     access_token: accessToken,
-                    refresh_token: refreshToken
+                    refresh_token: refreshToken,
+                    userId: response.id
                 }
             })
         } else {
