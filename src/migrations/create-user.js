@@ -18,6 +18,8 @@ module.exports = {
       // refresh_token: DataTypes.STRING
       email: { type: Sequelize.STRING },
       password: { type: Sequelize.STRING },
+      verify: { type: Sequelize.BOOLEAN, defaultValue: false },
+      code_verify: { type: Sequelize.STRING },
       kyc_id: { type: Sequelize.INTEGER },
       codeRefer: { type: Sequelize.STRING },
       wallet_id: { type: Sequelize.STRING },

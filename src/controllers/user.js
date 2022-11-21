@@ -23,3 +23,14 @@ export const sendEmail = async (req, res, next) => {
         return res.status(400).json(error)
     }
 }
+export const verifyEmail = async (req, res, next) => {
+    try {
+
+        const { id, code_verify } = req.params
+        const response = await services.verifyEmail(id, code_verify)
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return res.status(400).json(error)
+    }
+}

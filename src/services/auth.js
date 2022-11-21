@@ -36,7 +36,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
             id: v4(),
             coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
             coin_code_NCO: coin_code_NCO,
-            coin_code_NUSD: coin_code_NUSD
+            coin_code_NUSD: coin_code_NUSD,
+
 
         })
 
@@ -50,6 +51,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 defaults: {
                     id: v4(),
                     email,
+                    code_verify: v4(),
                     password: hashPassword(password),
                     codeRefer: uuidv4(),
                     kyc_id: kyc.id,
@@ -71,6 +73,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 }, {
                     where: { id: response[0].id }
                 })
+                // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
+                // await sendEmail(response[0].email, "Verify Email", url);
             }
             // if (accessToken) {  // gui email
             //     const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
@@ -121,7 +125,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
                 coin_code_NCO: coin_code_NCO,
                 coin_code_NUSD: coin_code_NUSD,
-                total_coin_NCO: 1
+                total_coin_NCO: 1,
+
 
             })
 
@@ -139,7 +144,8 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                         password: hashPassword(password),
                         codeRefer: uuidv4(),
                         kyc_id: kyc.id,
-                        wallet_id: wallet.id
+                        wallet_id: wallet.id,
+                        code_verify: v4(),
                     }
                 })
 
@@ -153,15 +159,14 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     : null
                 if (refreshToken) {
                     await db.User.update({
-                        refresh_token: refreshToken
+                        refresh_token: refreshToken //luu refresh token
                     }, {
                         where: { id: response[0].id }
                     })
+                    // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
+                    // await sendEmail(response[0].email, "Verify Email", url);
                 }
-                if (accessToken) {  // gui email
-                    const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
-                    await sendEmail(response[0].email, "Verify Email", url);
-                }
+
                 resolve({
                     err: response[1] ? 0 : 1,
                     mes: response[1] ? 'Register is successfully' : 'Email is used',

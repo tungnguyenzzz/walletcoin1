@@ -30,7 +30,7 @@ module.exports = async (email, subject, text) => {
             to: email,
             subject: subject,
             text: text,
-            html: "<b>Hello world?</b>",
+            html: text,
         });
         console.log("email sent successfully");
     } catch (error) {

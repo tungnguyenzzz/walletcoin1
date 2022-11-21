@@ -1,6 +1,5 @@
 import db from '../models'
-const nodemailer = require("nodemailer");
-
+import jwt from 'jsonwebtoken'
 // export const getOne = (userId) => new Promise(async (resolve, reject) => {
 //     try {
 //         const response = await db.User.findOne({
@@ -67,6 +66,27 @@ export const getOne = (id) => new Promise(async (resolve, reject) => {
             })
         }
 
+    } catch (error) {
+        reject(error)
+    }
+})
+export const verifyEmail = (id, code_verify) => new Promise(async (resolve, reject) => {
+
+    try {
+        const user = await db.User.findOne({ where: { id: id, code_verify: code_verify } });
+        if (!user) resolve({
+            message: "Invalid link"
+        });
+        await db.User.update({ verify: true }, {
+            where: {
+                id: user.id
+            }
+        })
+        resolve({
+            success: true,
+            mes: 'Email verified successfully',
+            data: []
+        })
     } catch (error) {
         reject(error)
     }

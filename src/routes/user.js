@@ -8,6 +8,7 @@ const router = express.Router()
 // router.use(verifyToken)
 router.post('/getMyWallet', controllers.getCurrent)
 router.get('/sendMail', controllers.sendEmail)
+router.get('/:id/verify/:code_verify', controllers.verifyEmail)
 // PRIVATE ROUTES
 
 
