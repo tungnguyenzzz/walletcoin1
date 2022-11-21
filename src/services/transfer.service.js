@@ -3,7 +3,6 @@ import db from '../models'
 
 export const posttransfer = (user_id, transfer_wallet_code, take_wallet_code, total_coin_NTC, total_coin_NCO, total_coin_NUSD) => new Promise(async (resolve, reject) => {
     try {
-
         const kyc = await db.User.findOne({ where: { id: user_id } });
         const checkkyc = await db.Kyc.findOne({ where: { id: kyc.kyc_id } });
 
