@@ -18,9 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         password: DataTypes.STRING,
         verify: DataTypes.BOOLEAN,
         code_verify: DataTypes.STRING,
-        kyc_id: DataTypes.INTEGER,
+        kyc_id: DataTypes.STRING,
         codeRefer: DataTypes.STRING,
         wallet_id: DataTypes.STRING,
+        role_login: DataTypes.INTEGER,
         role: DataTypes.INTEGER,
         refresh_token: DataTypes.STRING,
 

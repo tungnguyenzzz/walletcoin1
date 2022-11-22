@@ -32,18 +32,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
         const coin_code_NTC = randomCoinCode()
         const coin_code_NCO = randomCoinCode()
         const coin_code_NUSD = randomCoinCode()
-        const wallet = await db.Wallet.create({
-            id: v4(),
-            coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
-            coin_code_NCO: coin_code_NCO,
-            coin_code_NUSD: coin_code_NUSD,
 
-
-        })
-
-        const kyc = await db.Kyc.create({//them kyc id
-            status: 0
-        })
 
         try {
             const response = await db.User.findOrCreate({ // email exist tra ve false
@@ -54,42 +43,58 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     code_verify: v4(),
                     password: hashPassword(password),
                     codeRefer: uuidv4(),
-                    kyc_id: kyc.id,
-                    wallet_id: wallet.id
+                    kyc_id: v4(),
+                    wallet_id: v4()
                 }
             })
 
-            const accessToken = response[1] // khong thi tra ve true
-                ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
-                : null
+            if (response[1]) { //response[1] === true thi moi sign false la tim thay email trong db
+                await db.Wallet.create({
+                    id: response[0].wallet_id,
+                    coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
+                    coin_code_NCO: coin_code_NCO,
+                    coin_code_NUSD: coin_code_NUSD,
+                    total_coin_NUSD: 110
 
-            // JWT_SECRET_REFRESH_TOKEN
-            const refreshToken = response[1]
-                ? jwt.sign({ id: response[0].id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
-                : null
-            if (refreshToken) {
-                await db.User.update({
-                    refresh_token: refreshToken
-                }, {
-                    where: { id: response[0].id }
+
                 })
-                // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
-                // await sendEmail(response[0].email, "Verify Email", url);
+                await db.Kyc.create({//them kyc id
+                    id: response[0].kyc_id,
+                    status: 0
+                })
+
+                const accessToken = jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+
+                // JWT_SECRET_REFRESH_TOKEN
+                const refreshToken = jwt.sign({ id: response[0].id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+
+                if (refreshToken) {
+                    await db.User.update({
+                        refresh_token: refreshToken
+                    }, {
+                        where: { id: response[0].id }
+                    })
+                    // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
+                    // await sendEmail(response[0].email, "Verify Email", url);
+                }
+
+                resolve({
+                    err: 0,
+                    mes: 'Register is successfully',
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                    statusMail: "An Email sent to your account please verify"
+                })
+            } else {
+                resolve({
+                    err: 1,
+                    mes: 'Email is used',
+                })
             }
-            // if (accessToken) {  // gui email
-            //     const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${accessToken}`;
-            //     await sendEmail(response[0].email, "Verify Email", url);
-            // }
-            resolve({
-                err: response[1] ? 0 : 1,
-                mes: response[1] ? 'Register is successfully' : 'Email is used',
-                access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
-                refresh_token: refreshToken,
-                statusMail: "An Email sent to your account please verify"
-            })
 
         } catch (error) {
-            reject(error)
+            resolve(error)
         }
     } else {
         //tim thang user co ma gioi thieu nhap vao
@@ -120,20 +125,9 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
             const coin_code_NTC = randomCoinCode()
             const coin_code_NCO = randomCoinCode()
             const coin_code_NUSD = randomCoinCode()
-            const wallet = await db.Wallet.create({
-                id: v4(),
-                coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
-                coin_code_NCO: coin_code_NCO,
-                coin_code_NUSD: coin_code_NUSD,
-                total_coin_NCO: 1,
 
 
-            })
 
-            const kyc = await db.Kyc.create({
-                status: 0
-
-            })
 
             try {
                 const response = await db.User.findOrCreate({ // email exist tra ve false
@@ -141,42 +135,62 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     defaults: {
                         id: v4(),
                         email,
+                        code_verify: v4(),
                         password: hashPassword(password),
                         codeRefer: uuidv4(),
-                        kyc_id: kyc.id,
-                        wallet_id: wallet.id,
-                        code_verify: v4(),
+                        kyc_id: v4(),
+                        wallet_id: v4()
                     }
                 })
+                if (response[1]) {
+                    await db.Wallet.create({
+                        id: response[0].wallet_id,
+                        coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
+                        coin_code_NCO: coin_code_NCO,
+                        coin_code_NUSD: coin_code_NUSD,
+                        total_coin_NCO: 1,
+                        total_coin_NUSD: 110
 
-                const accessToken = response[1] // khong thi tra ve true
-                    ? jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
-                    : null
 
-                // JWT_SECRET_REFRESH_TOKEN
-                const refreshToken = response[1]
-                    ? jwt.sign({ id: response[0].id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
-                    : null
-                if (refreshToken) {
-                    await db.User.update({
-                        refresh_token: refreshToken //luu refresh token
-                    }, {
-                        where: { id: response[0].id }
                     })
-                    // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
-                    // await sendEmail(response[0].email, "Verify Email", url);
+                    await db.Kyc.create({//them kyc id
+                        id: response[0].kyc_id,
+                        status: 0
+                    })
+                    const accessToken = jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+
+                    // JWT_SECRET_REFRESH_TOKEN
+                    const refreshToken = jwt.sign({ id: response[0].id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+
+                    if (refreshToken) {
+                        await db.User.update({
+                            refresh_token: refreshToken
+                        }, {
+                            where: { id: response[0].id }
+                        })
+                        // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
+                        // await sendEmail(response[0].email, "Verify Email", url);
+                    }
+
+                    resolve({
+                        err: 0,
+                        mes: 'Register is successfully',
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                        statusMail: "An Email sent to your account please verify"
+                    })
+                } else {
+                    resolve({
+                        err: 1,
+                        mes: 'Email is used',
+                    })
                 }
 
-                resolve({
-                    err: response[1] ? 0 : 1,
-                    mes: response[1] ? 'Register is successfully' : 'Email is used',
-                    access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
-                    refresh_token: refreshToken,
-                    statusMail: "An Email sent to your account please verify"
-                })
+
 
             } catch (error) {
-                reject(error)
+                resolve(error)
             }
         }
 
@@ -228,8 +242,58 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             })
         }
     } catch (error) {
-        console.log(error)
-        reject({
+        resolve({
+            success: false,
+            err: error,
+            mes: 'Email and password incorrect!',
+            data: []
+        })
+    }
+})
+export const loginGoogle = ({ email, sub }) => new Promise(async (resolve, reject) => {
+
+    try {
+        const response = await db.User.findOne({
+            where: { email },
+            raw: true
+        })
+        const isChecked = response && bcrypt.compareSync(sub, response.password);
+
+        if (response && isChecked) {
+            const accessToken = isChecked
+                ? jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+                : null
+            // JWT_SECRET_REFRESH_TOKEN
+            const refreshToken = isChecked
+                ? jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+                : null
+            if (refreshToken) {
+                await db.User.update({
+                    refresh_token: refreshToken
+                }, {
+                    where: { id: response.id }
+                })
+            }
+            resolve({
+                success: true,
+                err: [],
+                mes: 'Login is successfully',
+                data: {
+                    access_token: accessToken,
+                    refresh_token: refreshToken,
+                    userId: response.id
+                }
+            })
+        } else {
+            resolve({
+                success: false,
+                err: [],
+                mes: 'Email and password incorrect!',
+                data: []
+            })
+        }
+    } catch (error) {
+        resolve({
             success: false,
             err: error,
             mes: 'Email and password incorrect!',
@@ -263,6 +327,87 @@ export const refreshToken = (refresh_token) => new Promise(async (resolve, rejec
             })
         }
     } catch (error) {
-        reject(error)
+        resolve(error)
     }
+})
+
+
+export const registerWithGoogle = ({ email, sub }) => new Promise(async (resolve, reject) => {
+    if (!email || !sub) {
+        resolve({
+            success: false,
+            err: [],
+            mes: 'missing parameters',
+            data: []
+        })
+    }
+
+    const coin_code_NTC = randomCoinCode()
+    const coin_code_NCO = randomCoinCode()
+    const coin_code_NUSD = randomCoinCode()
+
+
+    try {
+        const response = await db.User.findOrCreate({ // email exist tra ve false
+            where: { email },
+            defaults: {
+                id: v4(),
+                email,
+                code_verify: v4(),
+                password: hashPassword(sub),
+                codeRefer: uuidv4(),
+                kyc_id: v4(),
+                wallet_id: v4(),
+                role_login: 1
+            }
+        })
+
+        if (response[1]) { //response[1] === true thi moi sign false la tim thay email trong db
+            await db.Wallet.create({
+                id: response[0].wallet_id,
+                coin_code_NTC: coin_code_NTC,    //sinh ma coin 34 ky tu
+                coin_code_NCO: coin_code_NCO,
+                coin_code_NUSD: coin_code_NUSD,
+                total_coin_NUSD: 110
+
+
+            })
+            await db.Kyc.create({//them kyc id
+                id: response[0].kyc_id,
+                status: 0
+            })
+
+            const accessToken = jwt.sign({ id: response[0].id, email: response[0].email, role_code: response[0].role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+
+            // JWT_SECRET_REFRESH_TOKEN
+            const refreshToken = jwt.sign({ id: response[0].id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+
+            if (refreshToken) {
+                await db.User.update({
+                    refresh_token: refreshToken
+                }, {
+                    where: { id: response[0].id }
+                })
+                // const url = `${process.env.CLIENT_URL}users/${response[0].id}/verify/${response[0].code_verify}`;// gui email
+                // await sendEmail(response[0].email, "Verify Email", url);
+            }
+
+            resolve({
+                err: 0,
+                mes: 'Register is successfully',
+                access_token: accessToken,
+                refresh_token: refreshToken,
+                statusMail: "An Email sent to your account please verify"
+            })
+        } else {
+            resolve({
+                err: 1,
+                mes: 'Email is used',
+            })
+        }
+    } catch (error) {
+        resolve(error)
+    }
+
 })

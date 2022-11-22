@@ -5,9 +5,9 @@ module.exports = {
     await queryInterface.createTable('Kycs', {
       id: {
         allowNull: false,
-        autoIncrement: true,
+        // autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       fullname: { type: Sequelize.STRING, allowNull: true },
       phonenumber: { type: Sequelize.INTEGER, allowNull: true },

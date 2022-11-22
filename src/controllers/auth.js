@@ -13,9 +13,32 @@ export const register = async (req, res) => {
         return interalServerError(res)
     }
 }
+
+
+export const registerWithGoogle = async (req, res) => {
+
+    try {
+        const response = await services.registerWithGoogle(req.body)
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return interalServerError(res)
+    }
+}
+
+
 export const login = async (req, res) => {
     try {
         const response = await services.login(req.body)
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return interalServerError(res)
+    }
+}
+export const loginGoogle = async (req, res) => {
+    try {
+        const response = await services.loginGoogle(req.body)
         return res.status(200).json(response)
 
     } catch (error) {

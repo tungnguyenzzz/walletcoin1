@@ -20,9 +20,10 @@ module.exports = {
       password: { type: Sequelize.STRING },
       verify: { type: Sequelize.BOOLEAN, defaultValue: false },
       code_verify: { type: Sequelize.STRING },
-      kyc_id: { type: Sequelize.INTEGER },
+      kyc_id: { type: Sequelize.STRING },
       codeRefer: { type: Sequelize.STRING },
       wallet_id: { type: Sequelize.STRING },
+      role_login: { type: Sequelize.INTEGER, defaultValue: 0 },//0-dang ky thuong, 1 -google , 2-metamask
       role: { type: Sequelize.INTEGER, defaultValue: 0 },
       refresh_token: { type: Sequelize.STRING },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
