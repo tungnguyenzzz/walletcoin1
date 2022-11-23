@@ -91,6 +91,41 @@ export const verifyEmail = (id, code_verify) => new Promise(async (resolve, reje
         reject(error)
     }
 })
+export const typeCodeReferral = (codeReferInput) => new Promise(async (resolve, reject) => {
+
+    if (!codeReferInput || codeReferInput === '') {
+        resolve({
+            success: false,
+            mes: "Missing codeRefer"
+        })
+    }
+    try {
+        const user = await db.User.findOne({ where: { codeRefer: codeReferInput } });
+        if (!user) resolve({
+            success: false,
+            message: "Code referral not found"
+        });
+        const wallet_old = db.Wallet.findOne({ where: { id: user.wallet_id } })
+        const wallet = await db.Wallet.update({ total_coin_NCO: wallet_old.total_coin_NCO + 3.000 },
+            {
+                where: { id: user.wallet_id }
+            }
+        )
+
+        // await db.User.update({ verify: true }, {
+        //     where: {
+        //         id: user.id
+        //     }
+        // })
+        // resolve({
+        //     success: true,
+        //     mes: 'Email verified successfully',
+        //     data: []
+        // })
+    } catch (error) {
+        reject(error)
+    }
+})
 
 
 

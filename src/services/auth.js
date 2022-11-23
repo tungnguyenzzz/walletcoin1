@@ -22,7 +22,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
         resolve({
             success: false,
             err: [],
-            mes: 'missing parameters',
+            mes: 'Missing parameters',
             data: []
         })
     }
@@ -80,16 +80,16 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                 }
 
                 resolve({
-                    err: 0,
-                    mes: 'Register is successfully',
+                    success: true,
+                    mes: 'Register successfully',
                     access_token: accessToken,
                     refresh_token: refreshToken,
                     statusMail: "An Email sent to your account please verify"
                 })
             } else {
                 resolve({
-                    err: 1,
-                    mes: 'Email is used',
+                    success: false,
+                    mes: 'Email used, Sign In',
                 })
             }
 
@@ -105,7 +105,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
         if (!findWallet) resolve({
             success: false,
             err: [],
-            mes: 'coderefer not found',
+            mes: 'Coderefer not found',
             data: []
         })
         else {
@@ -174,16 +174,16 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     }
 
                     resolve({
-                        err: 0,
-                        mes: 'Register is successfully',
+                        success: true,
+                        mes: 'Register successfully',
                         access_token: accessToken,
                         refresh_token: refreshToken,
                         statusMail: "An Email sent to your account please verify"
                     })
                 } else {
                     resolve({
-                        err: 1,
-                        mes: 'Email is used',
+                        success: false,
+                        mes: 'Email used, Sign In',
                     })
                 }
 
@@ -226,7 +226,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             resolve({
                 success: true,
                 err: [],
-                mes: 'Login is successfully',
+                mes: 'Login successfully',
                 data: {
                     access_token: accessToken,
                     refresh_token: refreshToken,
@@ -237,7 +237,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
             resolve({
                 success: false,
                 err: [],
-                mes: 'Email and password incorrect!',
+                mes: 'Email or password incorrect!',
                 data: []
             })
         }
@@ -245,7 +245,7 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         resolve({
             success: false,
             err: error,
-            mes: 'Email and password incorrect!',
+            mes: 'Email or password incorrect!',
             data: []
         })
     }
@@ -277,7 +277,7 @@ export const loginGoogle = ({ email, sub }) => new Promise(async (resolve, rejec
             resolve({
                 success: true,
                 err: [],
-                mes: 'Login is successfully',
+                mes: 'Login successfully',
                 data: {
                     access_token: accessToken,
                     refresh_token: refreshToken,
@@ -288,7 +288,7 @@ export const loginGoogle = ({ email, sub }) => new Promise(async (resolve, rejec
             resolve({
                 success: false,
                 err: [],
-                mes: 'Email and password incorrect!',
+                mes: 'Email not found or not registered',
                 data: []
             })
         }
@@ -296,7 +296,7 @@ export const loginGoogle = ({ email, sub }) => new Promise(async (resolve, rejec
         resolve({
             success: false,
             err: error,
-            mes: 'Email and password incorrect!',
+            mes: 'Email not found or not registered',
             data: []
         })
     }
@@ -311,17 +311,17 @@ export const refreshToken = (refresh_token) => new Promise(async (resolve, rejec
             jwt.verify(refresh_token, process.env.JWT_SECRET_REFRESH_TOKEN, (err) => {
                 if (err) {
                     resolve({
-                        err: 1,
+                        success: false,
                         mes: 'Refresh token expired. Require login'
                     })
                 }
                 else {
                     const accessToken = jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '2d' })
                     resolve({
-                        err: accessToken ? 0 : 1,
+                        success: accessToken ? true : false,
                         mes: accessToken ? 'OK' : 'Fail to generate new access token. Let try more time',
-                        'access_token': accessToken ? `Bearer ${accessToken}` : accessToken,
-                        'refresh_token': refresh_token
+                        access_token: accessToken ? `Bearer ${accessToken}` : accessToken,
+                        refresh_token: refresh_token
                     })
                 }
             })
@@ -337,7 +337,7 @@ export const registerWithGoogle = ({ email, sub }) => new Promise(async (resolve
         resolve({
             success: false,
             err: [],
-            mes: 'missing parameters',
+            mes: 'Missing parameters',
             data: []
         })
     }
@@ -394,16 +394,16 @@ export const registerWithGoogle = ({ email, sub }) => new Promise(async (resolve
             }
 
             resolve({
-                err: 0,
-                mes: 'Register is successfully',
+                success: true,
+                mes: 'Register successfully',
                 access_token: accessToken,
                 refresh_token: refreshToken,
                 statusMail: "An Email sent to your account please verify"
             })
         } else {
             resolve({
-                err: 1,
-                mes: 'Email is used',
+                success: false,
+                mes: 'Email used, Sign In',
             })
         }
     } catch (error) {
