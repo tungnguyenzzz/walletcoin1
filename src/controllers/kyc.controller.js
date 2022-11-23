@@ -56,3 +56,15 @@ export const postKyc = async (req, res) => {
     return res.status(400).json(error);
   }
 };
+
+export const getPermissionKyc = async (req, res) => {
+  try {
+    const { user_id } = req.body;
+    const response = await services.checkUserKyc(user_id);
+    console.log(response)
+    return res.status(200).json(response)
+
+} catch (error) {
+    return res.status(400).json(error)
+}
+}

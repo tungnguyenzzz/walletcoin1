@@ -1,4 +1,5 @@
 import db from "../models";
+import { permission } from './../utils/permisionKyc';
 
 export const postkyc = (
   user_id,
@@ -26,23 +27,6 @@ export const postkyc = (
 ) =>
   new Promise(async (resolve, reject) => {
     try {
-      console.log(
-        user_id,
-        fullname,
-        phonenumber,
-        card_id,
-        birthday,
-        ssn_id,
-        ein_id,
-        card_front,
-        card_back,
-        country,
-        image_face,
-        image_ssn,
-        image_drive,
-        ein_image,
-        image_passport
-      );
       const User = await db.User.findOne({ where: { id: user_id } });
       if (User === null) {
         resolve({
@@ -74,7 +58,7 @@ export const postkyc = (
             codeLicense: codeLicense,
             codeEIN: codeEIN,
             codePassport: codePassport,
-            status: "0",
+            status: 1,
           },
           {
             where: {
@@ -83,10 +67,72 @@ export const postkyc = (
           }
         );
 
+        if (response) {
+          resolve({
+            success: true,
+            err: 2,
+            mes: "Ok",
+            data: response,
+          });
+        } else {
+          resolve({
+            success: false,
+            err: 0,
+            mes: "Ok",
+            data: response,
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
+export const checkUserKyc = (user_id) =>
+  new Promise(async (resolve, reject) => {
+    console.log(user_id);
+    try {
+      const user = await db.User.findOne({ where: { id: user_id } });
+      if (user) {
+        const kycInfo = await db.Kyc.findOne({ where: { id: user.kyc_id } });
+
+        if (kycInfo && kycInfo.dataValues.status === 1) {
+          console.log("object");
+          resolve({
+            success: true,
+            err: 0,
+            mes: "Awaiting verification.",
+            data: {
+              permission: permission.pending_review,
+            },
+          });
+        } else if (kycInfo && kycInfo.dataValues.status === 2) {
+          resolve({
+            success: true,
+            err: 0,
+            mes: "Your account has been approved. Thank you and enjoy your trading.",
+            data: {
+              permission: permission.approve,
+            },
+          });
+        } else {
+          resolve({
+            success: true,
+            err: 0,
+            mes: "Not kyc",
+            data: {
+              permission: permission.nonKyc,
+            },
+          });
+        }
+      } else {
         resolve({
-          err: response ? 0 : 1,
-          mes: response ? "Ok" : "Kyc not found",
-          kycData: response,
+          success: true,
+          err: 0,
+          mes: "User not found",
+          data: {
+            permission: true,
+          },
         });
       }
     } catch (error) {

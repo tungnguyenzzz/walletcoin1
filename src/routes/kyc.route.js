@@ -4,6 +4,7 @@ import express from 'express'
 const router = express.Router()
 
 router.post('/postKyc', controllers.postKyc)
+router.post('/getUserKyc', controllers.getPermissionKyc)
 
 
 module.exports = router
