@@ -15,7 +15,9 @@ export const postTransfer = async (req, res) => {
 export const getHistoryTranfer = async (req, res) => {
 
     try {
-        const response = await services.gethistorytranfer()
+        const { coinType, offset, pageItem } = req.body
+        console.log(coinType, offset, pageItem)
+        const response = await services.gethistorytranfer(coinType, offset, pageItem)
 
         return res.status(200).json(response)
 

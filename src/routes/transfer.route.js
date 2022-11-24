@@ -4,7 +4,7 @@ import express from 'express'
 const router = express.Router()
 
 router.post('/postTrainsfer', controllers.postTransfer);
-router.get('/getHistoryTranfer', controllers.getHistoryTranfer);
+router.post('/getHistoryTranfer', controllers.getHistoryTranfer);
 router.get('/getTopWalletNTC', controllers.getTopWalletNTC);
 router.get('/getTopWalletNCO', controllers.getTopWalletNCO);
 router.get('/getTopWalletNUSD', controllers.getTopWalletNUSD);

@@ -47,7 +47,7 @@ export const getOne = (id) => new Promise(async (resolve, reject) => {
                     data: {
                         user,
                         wallet,
-                        kycStatus: kycStatus.status
+                        kyc: kycStatus
                     }
 
                 })
