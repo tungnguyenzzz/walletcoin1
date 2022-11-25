@@ -386,6 +386,66 @@ export const gettopwalletNTC = () => new Promise(async (resolve, reject) => {
     }
 })
 
+export const searchInHistoryTransfer = (text) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      const response = await db.History_transfer.findAll({
+        limit: 20,
+        attributes: [
+          "transfer_wallet_code",
+          "total_coin_NTC",
+          "total_coin_NCO",
+          "total_coin_NUSD",
+          "take_wallet_code",
+          "createdAt",
+        ],
+        where: {
+          [Op.or]: [
+            {
+              total_coin_NTC: {
+                [Op.gt]: 0,
+              },
+            },
+            {
+              total_coin_NCO: {
+                [Op.gt]: 0,
+              },
+            },
+            {
+              total_coin_NUSD: {
+                [Op.gt]: 0,
+              },
+            },
+          ],
+          [Op.and]: {
+            transfer_wallet_code: {
+              [Op.like]: `%${text}%`,
+            },
+          },
+        },
+      });
+      console.log('object', response);
+
+      if (response) {
+        resolve({
+          success: true,
+          err: "success",
+          mes: "success",
+          data: response,
+        });
+      } else {
+        resolve({
+            success: false,
+            err: 'false',
+            mes: 'false',
+            data: {}
+        })
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 
 export const gettopwalletNCO = () => new Promise(async (resolve, reject) => {
     try {

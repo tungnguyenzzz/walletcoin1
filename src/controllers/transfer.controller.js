@@ -26,6 +26,19 @@ export const getHistoryTranfer = async (req, res) => {
     }
 }
 
+export const searchHistoryTransfer = async (req, res) => {
+
+    try {
+        const { text } = req.body
+        const response = await services.searchInHistoryTransfer(text)
+
+        return res.status(200).json(response)
+
+    } catch (error) {
+        return res.status(400).json(error)
+    }
+}
+
 export const getTopWalletNTC = async (req, res) => {
 
     try {
