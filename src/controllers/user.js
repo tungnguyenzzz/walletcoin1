@@ -25,8 +25,8 @@ export const sendEmail = async (req, res, next) => {
 }
 export const codeReferral = async (req, res, next) => {
     try {
-        const { codeReferInput } = req.body
-        const response = await services.typeCodeReferral(codeReferInput)
+        const { user_id, codeReferInput } = req.body
+        const response = await services.typeCodeReferral(user_id, codeReferInput)
         return res.status(200).json(response)
 
     } catch (error) {

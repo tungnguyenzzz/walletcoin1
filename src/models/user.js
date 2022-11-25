@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         code_verify: DataTypes.STRING,
         kyc_id: DataTypes.STRING,
         codeRefer: DataTypes.STRING,
+        entered: DataTypes.BOOLEAN,
         wallet_id: DataTypes.STRING,
         role_login: DataTypes.INTEGER,
         role: DataTypes.INTEGER,

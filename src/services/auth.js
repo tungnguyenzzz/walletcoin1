@@ -84,6 +84,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                     mes: 'Register successfully',
                     access_token: accessToken,
                     refresh_token: refreshToken,
+                    userId: response[0].id,
                     statusMail: "An Email sent to your account please verify"
                 })
             } else {
@@ -105,7 +106,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
         if (!findWallet) resolve({
             success: false,
             err: [],
-            mes: 'Coderefer not found',
+            mes: 'Code referral not found',
             data: []
         })
         else {
@@ -139,7 +140,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                         password: hashPassword(password),
                         codeRefer: uuidv4(),
                         kyc_id: v4(),
-                        wallet_id: v4()
+                        wallet_id: v4(),
                     }
                 })
                 if (response[1]) {
@@ -153,6 +154,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
 
 
                     })
+                    await db.User.update({ entered: false }, { where: { id: response[0].id } }) // set truong da nhap code refer thanh false: nhap 1 lan thoi
                     await db.Kyc.create({//them kyc id
                         id: response[0].kyc_id,
                         status: 0
@@ -178,6 +180,7 @@ export const register = ({ email, password, codeReferInput }) => new Promise(asy
                         mes: 'Register successfully',
                         access_token: accessToken,
                         refresh_token: refreshToken,
+                        userId: response[0].id,
                         statusMail: "An Email sent to your account please verify"
                     })
                 } else {
@@ -209,30 +212,52 @@ export const login = ({ email, password }) => new Promise(async (resolve, reject
         const isChecked = response && bcrypt.compareSync(password, response.password);
 
         if (response && isChecked) {
-            const accessToken = isChecked
-                ? jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
-                : null
-            // JWT_SECRET_REFRESH_TOKEN
-            const refreshToken = isChecked
-                ? jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
-                : null
-            if (refreshToken) {
-                await db.User.update({
-                    refresh_token: refreshToken
-                }, {
-                    where: { id: response.id }
+            if (!response.verify) {
+                const accessToken = jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+                // JWT_SECRET_REFRESH_TOKEN
+                const refreshToken = jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+                if (refreshToken) {
+                    await db.User.update({
+                        refresh_token: refreshToken
+                    }, {
+                        where: { id: response.id }
+                    })
+                    const url = `${process.env.CLIENT_URL}users/${response.id}/verify/${response.code_verify}`;// gui email
+                    await sendEmail(response.email, "Verify Email", url);
+                }
+                resolve({
+                    success: false,
+                    err: [],
+                    mes: 'An Email sent to your account please verify before login',
+                    data: []
                 })
             }
-            resolve({
-                success: true,
-                err: [],
-                mes: 'Login successfully',
-                data: {
-                    access_token: accessToken,
-                    refresh_token: refreshToken,
-                    userId: response.id
+            else {
+                const accessToken = jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+                // JWT_SECRET_REFRESH_TOKEN
+                const refreshToken = jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+
+                if (refreshToken) {
+                    await db.User.update({
+                        refresh_token: refreshToken
+                    }, {
+                        where: { id: response.id }
+                    })
                 }
-            })
+                resolve({
+                    success: true,
+                    err: [],
+                    mes: 'Login successfully',
+                    data: {
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                        userId: response.id
+                    }
+                })
+            }
+
         } else {
             resolve({
                 success: false,
@@ -260,35 +285,57 @@ export const loginGoogle = ({ email, sub }) => new Promise(async (resolve, rejec
         const isChecked = response && bcrypt.compareSync(sub, response.password);
 
         if (response && isChecked) {
-            const accessToken = isChecked
-                ? jwt.sign({ id: response.id, email: response.email, role_code: response.role_code }, process.env.JWT_SECRET, { expiresIn: '99999s' })
-                : null
-            // JWT_SECRET_REFRESH_TOKEN
-            const refreshToken = isChecked
-                ? jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
-                : null
-            if (refreshToken) {
-                await db.User.update({
-                    refresh_token: refreshToken
-                }, {
-                    where: { id: response.id }
+            if (!response.verify) {
+                const accessToken = jwt.sign({ id: response.id, email: response.email }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+                // JWT_SECRET_REFRESH_TOKEN
+                const refreshToken = jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+                if (refreshToken) {
+                    await db.User.update({
+                        refresh_token: refreshToken
+                    }, {
+                        where: { id: response.id }
+                    })
+                    const url = `${process.env.CLIENT_URL}users/${response.id}/verify/${response.code_verify}`;// gui email
+                    await sendEmail(response.email, "Verify Email", url);
+                }
+                resolve({
+                    success: false,
+                    err: [],
+                    mes: 'An Email sent to your account please verify before login',
+                    data: []
                 })
             }
-            resolve({
-                success: true,
-                err: [],
-                mes: 'Login successfully',
-                data: {
-                    access_token: accessToken,
-                    refresh_token: refreshToken,
-                    userId: response.id
+            else {
+                const accessToken = jwt.sign({ id: response.id, email: response.email }, process.env.JWT_SECRET, { expiresIn: '99999s' })
+
+                // JWT_SECRET_REFRESH_TOKEN
+                const refreshToken = jwt.sign({ id: response.id }, process.env.JWT_SECRET_REFRESH_TOKEN, { expiresIn: '15d' })
+
+                if (refreshToken) {
+                    await db.User.update({
+                        refresh_token: refreshToken
+                    }, {
+                        where: { id: response.id }
+                    })
                 }
-            })
+                resolve({
+                    success: true,
+                    err: [],
+                    mes: 'Login successfully',
+                    data: {
+                        access_token: accessToken,
+                        refresh_token: refreshToken,
+                        userId: response.id
+                    }
+                })
+            }
+
         } else {
             resolve({
                 success: false,
                 err: [],
-                mes: 'Email not found or not registered',
+                mes: 'Email or password incorrect!',
                 data: []
             })
         }
@@ -398,6 +445,7 @@ export const registerWithGoogle = ({ email, sub }) => new Promise(async (resolve
                 mes: 'Register successfully',
                 access_token: accessToken,
                 refresh_token: refreshToken,
+                userId: response[0].id,
                 statusMail: "An Email sent to your account please verify"
             })
         } else {

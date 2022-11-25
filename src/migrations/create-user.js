@@ -22,6 +22,7 @@ module.exports = {
       code_verify: { type: Sequelize.STRING },
       kyc_id: { type: Sequelize.STRING },
       codeRefer: { type: Sequelize.STRING },
+      entered: { type: Sequelize.BOOLEAN, defaultValue: true },
       wallet_id: { type: Sequelize.STRING },
       role_login: { type: Sequelize.INTEGER, defaultValue: 0 },//0-dang ky thuong, 1 -google , 2-metamask
       role: { type: Sequelize.INTEGER, defaultValue: 0 },
