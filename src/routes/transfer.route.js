@@ -9,6 +9,7 @@ router.post('/searchHistoryTransfer', controllers.searchHistoryTransfer);
 router.get('/getTopWalletNTC', controllers.getTopWalletNTC);
 router.get('/getTopWalletNCO', controllers.getTopWalletNCO);
 router.get('/getTopWalletNUSD', controllers.getTopWalletNUSD);
+router.post('/searchTopWalletByCoin', controllers.searchTopWalletByCoin);
 
 
 router.get('/getTotalTransfer', controllers.getTotalTransfer);

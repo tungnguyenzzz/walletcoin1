@@ -545,6 +545,67 @@ export const gettotaltransfer = () => new Promise(async (resolve, reject) => {
     }
 })
 
+export const searchTopWalletByCoin = (text, type) =>
+  new Promise(async (resolve, reject) => {
+    try {
+      if(type === 'NTC') {
+
+        let sqlNTC = `SELECT * FROM users 
+        INNER JOIN kycs ON kycs.id = users.kyc_id
+        INNER JOIN wallets ON wallets.id = users.wallet_id
+        WHERE kycs.status = 2 AND wallets.coin_code_NTC LIKE '%${text}%'
+        ORDER BY wallets.total_coin_NTC DESC`;
+
+        dbquery.query(sqlNTC, function (err, data) {
+        if (err) throw err;
+
+        resolve({
+          success: true,
+          err: "success",
+          mes: "success",
+          data: data,
+        });
+      });
+      } else if(type === 'NCO') {
+        let sqlNCO = `SELECT * FROM users 
+        INNER JOIN kycs ON kycs.id = users.kyc_id
+        INNER JOIN wallets ON wallets.id = users.wallet_id
+        WHERE kycs.status = 2 AND wallets.coin_code_NCO LIKE '%${text}%'
+        ORDER BY wallets.total_coin_NCO DESC`;
+
+      dbquery.query(sqlNCO, function (err, data) {
+        if (err) throw err;
+
+        resolve({
+          success: true,
+          err: "success",
+          mes: "success",
+          data: data,
+        });
+      });
+      } else {
+        let sqlNUSD = `SELECT * FROM users 
+        INNER JOIN kycs ON kycs.id = users.kyc_id
+        INNER JOIN wallets ON wallets.id = users.wallet_id
+        WHERE kycs.status = 2 AND wallets.coin_code_NUSD LIKE '%${text}%'
+        ORDER BY wallets.total_coin_NUSD DESC`;
+
+      dbquery.query(sqlNUSD, function (err, data) {
+        if (err) throw err;
+
+        resolve({
+          success: true,
+          err: "success",
+          mes: "success",
+          data: data,
+        });
+      });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+
 export const gettotalcoin = () => new Promise(async (resolve, reject) => {
     try {
         const response = await db.Kyc.findAll({
