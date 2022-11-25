@@ -2,6 +2,7 @@ import { parse } from 'dotenv';
 import db from '../models'
 import { typeCoin } from '../utils/typeCoin';
 const { Op } = require("sequelize");
+import dbquery from '../config/db';
 
 export const posttransfer = (user_id, transfer_wallet_code, take_wallet_code, total_coin_NTC, total_coin_NCO, total_coin_NUSD) => new Promise(async (resolve, reject) => {
     try {
@@ -257,211 +258,219 @@ export const posttransfer = (user_id, transfer_wallet_code, take_wallet_code, to
 })
 
 export const gethistorytranfer = (coinType, offset, pageItem) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      let skipData = 0;
-      if(offset == 0) {
-        skipData = pageItem * offset;
-      } else {
-        skipData = pageItem * (offset - 1)
-      }
-      const response = await db.History_transfer.findAll({
-        offset: skipData,
-        limit: 100,
-        attributes: [
-          "transfer_wallet_code",
-          `${coinType}`,
-          "take_wallet_code",
-          "createdAt",
-        ],
-        where: {
-            [Op.or] : [
-                {
-                    total_coin_NTC: {
-                        [Op.gt]: 0,  
-                    },
+    new Promise(async (resolve, reject) => {
+        try {
+            let skipData = 0;
+            if (offset == 0) {
+                skipData = pageItem * offset;
+            } else {
+                skipData = pageItem * (offset - 1)
+            }
+            const response = await db.History_transfer.findAll({
+                offset: skipData,
+                limit: 100,
+                attributes: [
+                    "transfer_wallet_code",
+                    `${coinType}`,
+                    "take_wallet_code",
+                    "createdAt",
+                ],
+                where: {
+                    [Op.or]: [
+                        {
+                            total_coin_NTC: {
+                                [Op.gt]: 0,
+                            },
+                        },
+                        {
+                            total_coin_NCO: {
+                                [Op.gt]: 0,
+                            },
+                        },
+                        {
+                            total_coin_NUSD: {
+                                [Op.gt]: 0,
+                            },
+                        },
+
+                    ]
+
                 },
-                {
-                    total_coin_NCO: {
-                        [Op.gt]: 0,  
-                    },
-                },
-                {
-                    total_coin_NUSD: {
-                        [Op.gt]: 0,  
-                    },
-                },
-                
-            ]
-            
-        },
-      });
-      if (response) {
-        switch (coinType) {
-          case typeCoin.NTC:
-            const newArrayNTC = response
-              .filter((item) => item.total_coin_NTC !== 0)
-              .map((el) => ({
-                transfer_wallet_code: el.transfer_wallet_code,
-                take_wallet_code: el.take_wallet_code,
-                totalCoin: el.total_coin_NTC,
-                typeCoin: "NTC",
-                createdAt: el.createdAt,
-              }));
-            resolve({
-              success: true,
-              err: "success",
-              mes: "success",
-              data: newArrayNTC,
             });
-            break;
-          case typeCoin.NCO:
-            const newArrayNCO = response
-              .filter((item) => item.total_coin_NCO !== 0)
-              .map((el) => ({
-                transfer_wallet_code: el.transfer_wallet_code,
-                take_wallet_code: el.take_wallet_code,
-                totalCoin: el.total_coin_NCO,
-                typeCoin: "NCO",
-                createdAt: el.createdAt,
-              }));
-            resolve({
-              success: true,
-              err: "success",
-              mes: "success",
-              data: newArrayNCO,
-            });
-            break;
-          case typeCoin.NUSD:
-            const newArrayNUSD = response
-              .filter((item) => item.total_coin_NUSD !== 0)
-              .map((el) => ({
-                transfer_wallet_code: el.transfer_wallet_code,
-                take_wallet_code: el.take_wallet_code,
-                totalCoin: el.total_coin_NUSD,
-                typeCoin: "NUSD",
-                createdAt: el.createdAt,
-              }));
-            resolve({
-              success: true,
-              err: "success",
-              mes: "success",
-              data: newArrayNUSD,
-            });
-            break;
-          default:
-            break;
+            if (response) {
+                switch (coinType) {
+                    case typeCoin.NTC:
+                        const newArrayNTC = response
+                            .filter((item) => item.total_coin_NTC !== 0)
+                            .map((el) => ({
+                                transfer_wallet_code: el.transfer_wallet_code,
+                                take_wallet_code: el.take_wallet_code,
+                                totalCoin: el.total_coin_NTC,
+                                typeCoin: "NTC",
+                                createdAt: el.createdAt,
+                            }));
+                        resolve({
+                            success: true,
+                            err: "success",
+                            mes: "success",
+                            data: newArrayNTC,
+                        });
+                        break;
+                    case typeCoin.NCO:
+                        const newArrayNCO = response
+                            .filter((item) => item.total_coin_NCO !== 0)
+                            .map((el) => ({
+                                transfer_wallet_code: el.transfer_wallet_code,
+                                take_wallet_code: el.take_wallet_code,
+                                totalCoin: el.total_coin_NCO,
+                                typeCoin: "NCO",
+                                createdAt: el.createdAt,
+                            }));
+                        resolve({
+                            success: true,
+                            err: "success",
+                            mes: "success",
+                            data: newArrayNCO,
+                        });
+                        break;
+                    case typeCoin.NUSD:
+                        const newArrayNUSD = response
+                            .filter((item) => item.total_coin_NUSD !== 0)
+                            .map((el) => ({
+                                transfer_wallet_code: el.transfer_wallet_code,
+                                take_wallet_code: el.take_wallet_code,
+                                totalCoin: el.total_coin_NUSD,
+                                typeCoin: "NUSD",
+                                createdAt: el.createdAt,
+                            }));
+                        resolve({
+                            success: true,
+                            err: "success",
+                            mes: "success",
+                            data: newArrayNUSD,
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            } else {
+                resolve({
+                    success: false,
+                    err: "false",
+                    mes: "false",
+                    data: {},
+                });
+            }
+        } catch (error) {
+            reject(error);
         }
-      } else {
-        resolve({
-          success: false,
-          err: "false",
-          mes: "false",
-          data: {},
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
+    });
 
 
 export const gettopwalletNTC = () => new Promise(async (resolve, reject) => {
     try {
-        const response = await db.Wallet.findAll({
-            limit: 100,
-            order: [
-                ['total_coin_NTC', 'DESC']
-            ]
+        var sql = `SELECT * FROM users 
+                INNER JOIN kycs ON kycs.id = users.kyc_id
+                INNER JOIN wallets ON wallets.id = users.wallet_id
+                WHERE kycs.status = 2
+                ORDER BY wallets.total_coin_NTC DESC`
+
+        dbquery.query(sql, function (err, data) {
+            if (err) throw err;
+
+            resolve({
+                success: true,
+                err: 'success',
+                mes: 'success',
+                data: data
+            })
         });
 
-        resolve({
-            success: true,
-            err: 'success',
-            mes: 'success',
-            data: response
-        })
     } catch (error) {
         reject(error)
     }
 })
 
 export const searchInHistoryTransfer = (text) =>
-  new Promise(async (resolve, reject) => {
-    try {
-      const response = await db.History_transfer.findAll({
-        limit: 20,
-        attributes: [
-          "transfer_wallet_code",
-          "total_coin_NTC",
-          "total_coin_NCO",
-          "total_coin_NUSD",
-          "take_wallet_code",
-          "createdAt",
-        ],
-        where: {
-          [Op.or]: [
-            {
-              total_coin_NTC: {
-                [Op.gt]: 0,
-              },
-            },
-            {
-              total_coin_NCO: {
-                [Op.gt]: 0,
-              },
-            },
-            {
-              total_coin_NUSD: {
-                [Op.gt]: 0,
-              },
-            },
-          ],
-          [Op.and]: {
-            transfer_wallet_code: {
-              [Op.like]: `%${text}%`,
-            },
-          },
-        },
-      });
-      console.log('object', response);
+    new Promise(async (resolve, reject) => {
+        try {
+            const response = await db.History_transfer.findAll({
+                limit: 20,
+                attributes: [
+                    "transfer_wallet_code",
+                    "total_coin_NTC",
+                    "total_coin_NCO",
+                    "total_coin_NUSD",
+                    "take_wallet_code",
+                    "createdAt",
+                ],
+                where: {
+                    [Op.or]: [
+                        {
+                            total_coin_NTC: {
+                                [Op.gt]: 0,
+                            },
+                        },
+                        {
+                            total_coin_NCO: {
+                                [Op.gt]: 0,
+                            },
+                        },
+                        {
+                            total_coin_NUSD: {
+                                [Op.gt]: 0,
+                            },
+                        },
+                    ],
+                    [Op.and]: {
+                        transfer_wallet_code: {
+                            [Op.like]: `%${text}%`,
+                        },
+                    },
+                },
+            });
+            console.log('object', response);
 
-      if (response) {
-        resolve({
-          success: true,
-          err: "success",
-          mes: "success",
-          data: response,
-        });
-      } else {
-        resolve({
-            success: false,
-            err: 'false',
-            mes: 'false',
-            data: {}
-        })
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
+            if (response) {
+                resolve({
+                    success: true,
+                    err: "success",
+                    mes: "success",
+                    data: response,
+                });
+            } else {
+                resolve({
+                    success: false,
+                    err: 'false',
+                    mes: 'false',
+                    data: {}
+                })
+            }
+        } catch (error) {
+            reject(error);
+        }
+    });
 
 
 export const gettopwalletNCO = () => new Promise(async (resolve, reject) => {
     try {
-        const response = await db.Wallet.findAll({
-            limit: 100,
-            order: [
-                ['total_coin_NCO', 'DESC']
-            ]
+        var sql = `SELECT * FROM users 
+                INNER JOIN kycs ON kycs.id = users.kyc_id
+                INNER JOIN wallets ON wallets.id = users.wallet_id
+                WHERE kycs.status = 2
+                ORDER BY wallets.total_coin_NCO DESC`
+
+        dbquery.query(sql, function (err, data) {
+            if (err) throw err;
+
+            resolve({
+                success: true,
+                err: 'success',
+                mes: 'success',
+                data: data
+            })
         });
 
-        resolve({
-            success: true,
-            err: 'success',
-            mes: 'success',
-            data: response
-        })
     } catch (error) {
         reject(error)
     }
@@ -470,19 +479,23 @@ export const gettopwalletNCO = () => new Promise(async (resolve, reject) => {
 
 export const gettopwalletNUSD = () => new Promise(async (resolve, reject) => {
     try {
-        const response = await db.Wallet.findAll({
-            limit: 100,
-            order: [
-                ['total_coin_NUSD', 'DESC']
-            ]
+        var sql = `SELECT * FROM users 
+                INNER JOIN kycs ON kycs.id = users.kyc_id
+                INNER JOIN wallets ON wallets.id = users.wallet_id
+                WHERE kycs.status = 2
+                ORDER BY wallets.total_coin_NUSD DESC`
+
+        dbquery.query(sql, function (err, data) {
+            if (err) throw err;
+
+            resolve({
+                success: true,
+                err: 'success',
+                mes: 'success',
+                data: data
+            })
         });
 
-        resolve({
-            success: true,
-            err: 'success',
-            mes: 'success',
-            data: response
-        })
     } catch (error) {
         reject(error)
     }

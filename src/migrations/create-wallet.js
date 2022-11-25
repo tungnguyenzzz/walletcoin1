@@ -17,7 +17,7 @@ module.exports = {
       coin_price_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0.000000 },
       total_coin_NTC: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0.000000 },
       total_coin_NCO: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0.000000 },
-      total_coin_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 0.000000 },
+      total_coin_NUSD: { type: Sequelize.DOUBLE, allowNull: true, defaultValue: 110 },
       createdAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
       updatedAt: { allowNull: false, type: 'TIMESTAMP', defaultValue: Sequelize.literal('CURRENT_TIMESTAMP') },
     });
